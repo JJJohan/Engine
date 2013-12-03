@@ -10,11 +10,15 @@ Application* Application::m_pApplication = NULL;
 
 Application::Application()
 {
+	m_pApplication = this;
+
 	m_exit = false;
 	m_title = "Application";
 	m_pRenderer = NULL;
 	m_timeCurr = 0.0f;
 	m_timeLast = (float)timeGetTime() / 1000.0f;
+
+	SysInfo::Refresh();
 }
 
 Application* Application::Instance()
@@ -24,10 +28,12 @@ Application* Application::Instance()
 
 void Application::Release()
 {
-	Shutdown();
-	m_exit = true;
-	LOG("Releasing engine...");
-	SAFE_DELETE(m_pRenderer);
+	if (!m_exit)
+	{
+		Shutdown();
+		m_exit = true;
+		SAFE_DELETE(m_pRenderer);
+	}
 }
 
 void Application::Shutdown()
@@ -35,7 +41,7 @@ void Application::Shutdown()
 
 }
 
-bool Application::Create(std::string a_configPath)
+bool Application::AutoCreate()
 {
 	int width = 0, height = 0;
 	Renderer::Device renderer = Renderer::Device::DIRECTX11;
@@ -43,7 +49,7 @@ bool Application::Create(std::string a_configPath)
 	bool vsync = false;
 	bool configValid = false;
 
-	std::ifstream file(a_configPath);
+	/*std::ifstream file(a_configPath);
 	if (file.is_open())
 	{
 		String string;
@@ -85,7 +91,7 @@ bool Application::Create(std::string a_configPath)
 			configValid = true;
 			
 		file.close();
-	}
+	}*/
 
 	if (!configValid)
 	{
@@ -101,7 +107,7 @@ bool Application::Create(std::string a_configPath)
 
 bool Application::Create(bool a_fullscreen, Renderer::Device a_renderer)
 {
-	return Application::Create(SysInfo::Resolution::Width(), SysInfo::Resolution::Height(), a_fullscreen, false, a_renderer);
+	return Application::Create(SysInfo::Screen::width, SysInfo::Screen::height, a_fullscreen, false, a_renderer);
 }
 
 bool Application::Create(int a_width, int a_height, bool a_fullscreen, bool a_vsync, Renderer::Device a_renderer)
@@ -160,7 +166,7 @@ void Application::UpdateInternal()
 #endif
 
 		if (m_pRenderer->GetWindow()->Shutdown())
-			Release();
+			Release();		
 	}
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(1));

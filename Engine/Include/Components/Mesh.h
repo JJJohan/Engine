@@ -8,8 +8,8 @@ namespace Engine
 	class Mesh : public Component
 	{
 	public:
-		__declspec(dllexport) Mesh(Object* a_pParent);
-		__declspec(dllexport) ~Mesh();
+		Mesh(Object* a_pParent);
+		~Mesh();
 
 		void Test() { LOG("I'm a mesh!"); }
 

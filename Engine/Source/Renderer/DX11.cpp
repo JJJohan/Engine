@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#define RELEASE(x) if (x) { x->Release(); x = NULL; }
-
 namespace Engine
 {
 	DX11::DX11()
@@ -464,7 +462,7 @@ namespace Engine
 #if defined(_DEBUG)
 		if (m_pDebug)
 		{
-			m_pDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+			//m_pDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 		}
 
 		RELEASE(m_pDebug);

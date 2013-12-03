@@ -8,6 +8,7 @@
 #define LOG Logger::Instance().Log
 #define LOG_ERROR Logger::Instance().LogError
 #define LOG_WARNING Logger::Instance().LogWarning
+#define LOG_LINE LOG(Logger::Colours::YELLOW, "-------------------------------------------------------------------------------");
 #define MESSAGE Logger::Instance().Message
 
 namespace Engine

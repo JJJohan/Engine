@@ -6,8 +6,8 @@ namespace Engine
 	class Vector2
 	{
 	public:
-		__declspec(dllexport) Vector2();
-		__declspec(dllexport) Vector2(float a_x, float a_y);
+		Vector2();
+		Vector2(float a_x, float a_y);
 
 		float x;
 		float y;

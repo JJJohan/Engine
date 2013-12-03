@@ -193,7 +193,7 @@ namespace Engine
 		ZeroMemory(&msg, sizeof(MSG));
 
 #if !defined(FORCE_SINGLE_THREADING)
-		while (APPLICATION && !APPLICATION->GetExit())
+		while (APPLICATION && (!APPLICATION->GetExit() || RENDERER->Active()))
 		{
 #endif
 			// Handle the windows messages.

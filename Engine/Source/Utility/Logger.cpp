@@ -96,7 +96,7 @@ namespace Engine
 		char* buff = new char[length];
 		vsprintf_s(buff, length, a_fmt.c_str(), args);
 		Log(Colours::WHITE, std::string(buff));
-		SAFE_DELETE(buff);
+		SAFE_DELETE_ARRAY(buff);
 		va_end(args);
 	}
 
@@ -108,7 +108,7 @@ namespace Engine
 		char* buff = new char[length];
 		vsprintf_s(buff, length, a_fmt.c_str(), args);
 		std::string fmt = buff;
-		SAFE_DELETE(buff);
+		SAFE_DELETE_ARRAY(buff);
 		va_end(args);
 
 		// Print message to console
@@ -156,7 +156,7 @@ namespace Engine
 		char* buff = new char[length];
 		vsprintf_s(buff, length, a_fmt.c_str(), args);
 		std::string fmt = buff;
-		SAFE_DELETE(buff);
+		SAFE_DELETE_ARRAY(buff);
 		va_end(args);
 
 		// Log a warning
@@ -171,7 +171,7 @@ namespace Engine
 		char* buff = new char[length];
 		vsprintf_s(buff, length, a_fmt.c_str(), args);
 		LogError(false, std::string(buff));
-		SAFE_DELETE(buff);
+		SAFE_DELETE_ARRAY(buff);
 		va_end(args);
 	}
 
@@ -183,7 +183,7 @@ namespace Engine
 		char* buff = new char[length];
 		vsprintf_s(buff, length, a_fmt.c_str(), args);
 		std::string fmt = buff;
-		SAFE_DELETE(buff);
+		SAFE_DELETE_ARRAY(buff);
 		va_end(args);
 
 		// Log an error and message user.
@@ -221,7 +221,7 @@ namespace Engine
 		char* buff = new char[length];
 		vsprintf_s(buff, length, a_fmt.c_str(), args);
 		Message("", std::string(buff));
-		SAFE_DELETE(buff);
+		SAFE_DELETE_ARRAY(buff);
 		va_end(args);
 	}
 
@@ -234,7 +234,7 @@ namespace Engine
 		vsprintf_s(buff, length, a_fmt.c_str(), args);
 		va_end(args);
 		std::string fmt = buff;
-		SAFE_DELETE(buff);
+		SAFE_DELETE_ARRAY(buff);
 
 		// Message user	
 		if (APPLICATION)

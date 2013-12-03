@@ -1,22 +1,66 @@
 #ifndef SYSINFO_H
 #define SYSINFO_H
 
+#include <string>
+
 namespace Engine
 {
-	class SysInfo
+	class __declspec(dllexport) SysInfo
 	{
 	public:
-		struct Resolution
+		static struct Screen
 		{
-			static __declspec(dllexport) int Width();
-			static __declspec(dllexport) int Height();
+			static int width;
+			static int height;
+			static int bpp;
+			static int monitors;
 		};
 
-		static __declspec(dllexport) void Fetch();
+		static struct CPU
+		{
+			static int cpus;
+			static int cores_logical;
+			static int cores_physical;
+			static bool hyperthreading;
+			static std::string name;
+			static int cache_l1;
+			static int cache_l2;
+			static int cache_l3;
+		};
+
+		static struct OS
+		{
+			static int build;
+			static int major;
+			static int minor;
+		};
+
+		static struct Memory
+		{
+			static int total;
+			static int available;
+			static int used;
+		};
+
+		static struct Video
+		{
+			static int memory;
+			static std::string name;
+			static int dx_major;
+			static int dx_minor;
+		};
+
+		static void Refresh();
+		static void Print();
 
 	private:
-		static int m_width;
-		static int m_height;
+		SysInfo(SysInfo const&);
+		void operator=(SysInfo const&);
+
+		static std::string GetProcessorName();
+		static DWORD CountSetBits(ULONG_PTR bitMask);
+		static void GetCPUInfo();
+		static void GetVideoInfo();
 	};
 }
 

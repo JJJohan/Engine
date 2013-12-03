@@ -9,6 +9,7 @@ namespace Engine
 	Renderer::Renderer()
 	{
 		m_pDX11 = NULL;
+		m_pDX11Buffer = NULL;
 		m_pOGL = NULL;
 		m_pWindow = NULL;
 		m_fps = 0.0f;
@@ -40,16 +41,14 @@ namespace Engine
 			if (APPLICATION && APPLICATION->GetExit())
 				return false;
 
-
 			std::this_thread::sleep_for(std::chrono::milliseconds(1));
-
 		}
 #endif			
 
 		if (m_renderer == DIRECTX11)
 		{
-			//void* buffer = _aligned_malloc(sizeof(DX11), 16);
-			m_pDX11 = new DX11();
+			m_pDX11Buffer = _aligned_malloc(sizeof(DX11), 16);
+			m_pDX11 = new (m_pDX11Buffer) DX11();
 			if (m_pDX11->Initialise(a_width, a_height, a_vsync, m_pWindow->WindowHandle(), a_fullscreen, 1.0f, 1000.0f))
 			{
 				LOG(Logger::BLUE, "Initialised DirectX 11 Renderer.");
@@ -108,6 +107,11 @@ namespace Engine
 		}
 	}
 
+	bool Renderer::Active()
+	{
+		return (m_pDX11 || m_pOGL);
+	}
+
 	void Renderer::Draw()
 	{
 		if (m_renderer == DIRECTX11)
@@ -116,6 +120,7 @@ namespace Engine
 			while (APPLICATION && !APPLICATION->GetExit())
 			{
 #endif
+				APPLICATION->Draw();
 				CalculateFPS();
 				m_pDX11->BeginScene();
 				m_pDX11->Draw();
@@ -137,6 +142,7 @@ namespace Engine
 			while (APPLICATION && !APPLICATION->GetExit())
 			{
 #endif
+				APPLICATION->Draw();
 				CalculateFPS();
 				m_pOGL->BeginScene();
 				m_pOGL->EndScene();
@@ -146,6 +152,7 @@ namespace Engine
 			}
 
 			m_pOGL->Release(m_pWindow->WindowHandle());
+			m_pOGL = NULL;
 #endif
 		}
 	}
@@ -194,7 +201,14 @@ namespace Engine
 		}
 #endif
 
-		SAFE_DELETE(m_pDX11);
+		if (m_pDX11)
+		{
+			m_pDX11->~DX11();
+			_aligned_free(m_pDX11Buffer);
+			m_pDX11 = NULL;
+			m_pDX11Buffer = NULL;
+		}
+
 		SAFE_DELETE(m_pOGL);
 		SAFE_DELETE(m_pWindow);
 

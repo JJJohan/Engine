@@ -14,7 +14,7 @@ namespace Engine
 	public:
 		__declspec(dllexport) static Application* Instance();
 
-		__declspec(dllexport) bool Create(std::string a_configPath);
+		__declspec(dllexport) bool AutoCreate();
 		__declspec(dllexport) bool Create(bool a_fullscreen, Renderer::Device a_renderer);
 		__declspec(dllexport) bool Create(int a_width, int a_height, bool a_fullscreen, bool a_vsync, Renderer::Device a_renderer);
 

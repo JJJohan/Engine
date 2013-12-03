@@ -14,7 +14,7 @@ namespace Engine
 	class Network
 	{
 	public:
-		static __declspec(dllexport) Network& Instance();
+		static Network& Instance();
 
 		class Web
 		{
@@ -39,9 +39,9 @@ namespace Engine
 					std::string data;
 				};
 
-				__declspec(dllexport) WEB_RESULT Get(std::string a_url);
-				__declspec(dllexport) WEB_RESULT Post(std::string a_url, std::string a_data);
-				__declspec(dllexport) WEB_RESULT PostGet(std::string a_url, std::string a_data);
+				WEB_RESULT Get(std::string a_url);
+				WEB_RESULT Post(std::string a_url, std::string a_data);
+				WEB_RESULT PostGet(std::string a_url, std::string a_data);
 
 				Async();
 				~Async();
@@ -53,11 +53,11 @@ namespace Engine
 				std::vector<std::thread> m_threadPool;
 			};
 
-			__declspec(dllexport) Session* CreateSession();
-			__declspec(dllexport) void EndSession(Session* a_session);
-			__declspec(dllexport) bool Get(std::string a_url, std::string& a_output, Session* a_session);
-			__declspec(dllexport) bool Post(std::string a_url, std::string a_data, Session* a_session);
-			__declspec(dllexport) bool PostGet(std::string a_url, std::string a_data, std::string& a_output, Session* a_session);
+			Session* CreateSession();
+			void EndSession(Session* a_session);
+			bool Get(std::string a_url, std::string& a_output, Session* a_session);
+			bool Post(std::string a_url, std::string a_data, Session* a_session);
+			bool PostGet(std::string a_url, std::string a_data, std::string& a_output, Session* a_session);
 
 			Async async;
 

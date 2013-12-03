@@ -8,6 +8,12 @@ namespace Engine
 		m_pTransform = AddComponent<Transform>();
 	}
 
+	Object::Object()
+	{
+		m_pParent = NULL;
+		m_pTransform = AddComponent<Transform>();
+	}
+
 	Object::~Object()
 	{
 		// Remove parent connection

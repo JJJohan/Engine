@@ -25,6 +25,7 @@ namespace Engine
 		__declspec(dllexport) ~Renderer();
 		__declspec(dllexport) bool CreateRenderer(int a_width, int a_height, bool a_fullscreen, bool a_vsync, Device a_renderer);
 		void Draw();
+		bool Active();
 		void Release();
 		__declspec(dllexport) Device GraphicsMode();
 		__declspec(dllexport) float FPS();
@@ -38,6 +39,7 @@ namespace Engine
 	private:
 		inline void CalculateFPS();
 
+		void* m_pDX11Buffer;
 		Device m_renderer;
 		float m_fps;
 		float m_frameDelta;
@@ -46,6 +48,7 @@ namespace Engine
 		int m_frames;
 		bool m_vsync;
 		bool m_fullscreen;
+		std::atomic<bool> m_finished;
 		OGL* m_pOGL;
 		DX11* m_pDX11;
 		Window* m_pWindow;

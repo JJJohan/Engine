@@ -10,7 +10,8 @@ namespace Engine
 	class Object
 	{
 	public:
-		__declspec(dllexport) Object(Object* a_pParent = NULL);
+		__declspec(dllexport) Object(Object* a_pParent);
+		__declspec(dllexport) Object();
 		__declspec(dllexport) ~Object();
 
 		__declspec(dllexport) Object* AddChild();
