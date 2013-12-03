@@ -16,18 +16,27 @@ namespace Engine
 		~Window();
 
 		bool Created();
+		bool Shutdown();
 		void SetTitle(std::string a_title);
 		std::string GetTitle();
 
 		HWND WindowHandle();
 		HINSTANCE InstanceHandle();
 
-	private:
+#if defined(FORCE_SINGLE_THREADING)
 		void Update();
+#endif
+
+	private:
+#if !defined(FORCE_SINGLE_THREADING)
+		void Update();
+#endif
 		static LRESULT CALLBACK WndProc(HWND a_hwnd, UINT a_umessage, WPARAM a_wparam, LPARAM a_lparam);
 
 		bool m_created;
 		bool m_fullscreen;
+		bool m_shutdown;
+		std::string m_title;
 		HWND m_hwnd;
 		HINSTANCE m_hInstance;
 		OGL* m_pOGL;

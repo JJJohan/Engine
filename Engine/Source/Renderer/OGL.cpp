@@ -237,7 +237,7 @@ namespace Engine
 		return true;
 	}
 
-	void OGL::Shutdown(HWND a_hwnd)
+	void OGL::Release(HWND a_hwnd)
 	{
 		// Release the rendering context.
 		if (m_pRenderingContext)
@@ -253,6 +253,8 @@ namespace Engine
 			ReleaseDC(a_hwnd, m_pDeviceContext);
 			m_pDeviceContext = NULL;
 		}
+
+		LOG("OGL released.");
 	}
 
 	bool OGL::LoadExtensionList()
@@ -487,10 +489,5 @@ namespace Engine
 	{
 		// Present the back buffer to the screen since rendering is complete.
 		SwapBuffers(m_pDeviceContext);
-	}
-
-	OGL::~OGL()
-	{
-		Shutdown(Core::Instance().GetRenderer()->GetWindow()->WindowHandle());
 	}
 }

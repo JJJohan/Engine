@@ -1,8 +1,10 @@
 #ifndef STDAFX_H
 #define STDAFX_H
 
-#include "Logger.h"
-#include "Timer.h"
+#include "Utility/Logger.h"
+#include "Utility/Timer.h"
+#include "Utility/string2.h"
+#include "Utility/Helpers.h"
 
 #include "Math/Vector3.h"
 #include "Math/Vector2.h"
@@ -18,13 +20,11 @@
 #include "Renderer/OGL.h"
 #include "Renderer/DX11.h"
 #include "Renderer/Renderer.h"
+#include "Renderer/Window.h"
 
-#include "Network.h"
-#include "SysInfo.h"
-#include "string2.h"
-#include "Window.h"
-#include "Input.h"
-#include "Helpers.h"
-#include "Core.h"
+#include "Application/Network.h"
+#include "Application/SysInfo.h"
+#include "Application/Input.h"
+#include "Application/Application.h"
 
 #endif // STDAFX_H

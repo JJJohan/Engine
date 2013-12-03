@@ -6,19 +6,23 @@
 
 namespace Engine
 {
-	Renderer::Renderer(int a_width, int a_height, bool a_fullscreen, bool a_vsync, Device a_renderer)
+	Renderer::Renderer()
 	{
 		m_pDX11 = NULL;
 		m_pOGL = NULL;
-		m_renderer = a_renderer;
-		m_fullscreen = a_fullscreen;
-		m_vsync = a_vsync;
-
+		m_pWindow = NULL;
 		m_fps = 0.0f;
 		m_frameDelta = 0.0f;
 		m_frames = 0;
 		m_frameTime = 0.0f;
-		m_lastFrameTime = (float)timeGetTime() / 1000.0f;
+		m_lastFrameTime = (float) timeGetTime() / 1000.0f;
+	}
+
+	bool Renderer::CreateRenderer(int a_width, int a_height, bool a_fullscreen, bool a_vsync, Device a_renderer)
+	{		
+		m_renderer = a_renderer;
+		m_fullscreen = a_fullscreen;
+		m_vsync = a_vsync;
 
 		if (m_renderer == OPENGL)
 		{
@@ -26,20 +30,41 @@ namespace Engine
 		}
 
 		m_pWindow = new Window(m_pOGL);
+#if defined(FORCE_SINGLE_THREADING)
+		m_pWindow->OpenWindow(a_width, a_height, a_fullscreen, a_vsync);
+#else
 		m_tWindow = std::thread(&Window::OpenWindow, m_pWindow, a_width, a_height, a_fullscreen, a_vsync);
 
 		while (!m_pWindow->Created())
+		{
+			if (APPLICATION && APPLICATION->GetExit())
+				return false;
+
+
 			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+		}
+#endif			
 
 		if (m_renderer == DIRECTX11)
 		{
 			//void* buffer = _aligned_malloc(sizeof(DX11), 16);
 			m_pDX11 = new DX11();
-			m_pDX11->Initialise(a_width, a_height, a_vsync, m_pWindow->WindowHandle(), a_fullscreen, 1.0f, 1000.0f);
-			LOG("Initialised DirectX 11 Renderer.", Logger::BLUE);
+			if (m_pDX11->Initialise(a_width, a_height, a_vsync, m_pWindow->WindowHandle(), a_fullscreen, 1.0f, 1000.0f))
+			{
+				LOG(Logger::BLUE, "Initialised DirectX 11 Renderer.");
+			}
+			else
+			{
+				return false;
+			}
 		}
 
+#if !defined(FORCE_SINGLE_THREADING)
 		m_tDraw = std::thread(&Renderer::Draw, this);
+#endif
+
+		return true;
 	}
 
 	Renderer::Device Renderer::GraphicsMode()
@@ -87,48 +112,92 @@ namespace Engine
 	{
 		if (m_renderer == DIRECTX11)
 		{
-			while (!Core::Instance().Exit())
+#if !defined(FORCE_SINGLE_THREADING)
+			while (APPLICATION && !APPLICATION->GetExit())
 			{
+#endif
 				CalculateFPS();
 				m_pDX11->BeginScene();
+				m_pDX11->Draw();
 				m_pDX11->EndScene();
 
+#if !defined(FORCE_SINGLE_THREADING)
 				std::this_thread::sleep_for(std::chrono::milliseconds(1));
 			}
 
-			m_pDX11->Shutdown();
+			m_pDX11->Release();
+#endif
 		}
 		else
 		{
+#if !defined(FORCE_SINGLE_THREADING)
 			// Set current thread as the rendering thread.
 			m_pOGL->MakeCurrent();
 
-			while (!Core::Instance().Exit())
+			while (APPLICATION && !APPLICATION->GetExit())
 			{
+#endif
 				CalculateFPS();
 				m_pOGL->BeginScene();
 				m_pOGL->EndScene();
 
+#if !defined(FORCE_SINGLE_THREADING)
 				std::this_thread::sleep_for(std::chrono::milliseconds(1));
 			}
+
+			m_pOGL->Release(m_pWindow->WindowHandle());
+#endif
 		}
 	}
 
-	void Renderer::CloseWindow()
+	void Renderer::SetClearColour(float a_red, float a_green, float a_blue, float a_alpha)
 	{
-		Sleep(500);
+		if (m_renderer == DIRECTX11 && m_pDX11)
+		{
+			m_pDX11->SetClearColour(a_red, a_green, a_blue, a_alpha);
+		}
+		else if (m_pOGL)
+		{
+			m_pOGL->SetClearColour(a_red, a_green, a_blue, a_alpha);
+		}
+	}
 
-		m_tWindow.join();
-		SAFE_DELETE(m_pWindow);
+	void Renderer::GetVideoCardInfo(char* a_cardName, int& a_memory)
+	{
+		if (m_renderer == DIRECTX11 && m_pDX11)
+		{
+			m_pDX11->GetVideoCardInfo(a_cardName, a_memory);
+		}
+		else if (m_pOGL)
+		{
+			m_pOGL->GetVideoCardInfo(a_cardName);
+			a_memory = -1;
+		}
 	}
 
 	Renderer::~Renderer()
 	{
-		m_tDraw.join();
-		m_tWindow.join();
+#if !defined(FORCE_SINGLE_THREADING)
+		if (m_tDraw.joinable())
+			m_tDraw.join();
+
+		if (m_tWindow.joinable())
+			m_tWindow.join();
+#else
+		if (m_renderer == DIRECTX11)
+		{
+			m_pDX11->Release();
+		}
+		else
+		{
+			m_pOGL->Release(m_pWindow->WindowHandle());
+		}
+#endif
 
 		SAFE_DELETE(m_pDX11);
 		SAFE_DELETE(m_pOGL);
 		SAFE_DELETE(m_pWindow);
+
+		LOG("Renderer released.");
 	}
 }

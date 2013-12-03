@@ -4,7 +4,7 @@
 #include <thread>
 #include <atomic>
 
-#define RENDERER Core::Instance().GetRenderer()
+#define RENDERER APPLICATION->GetRenderer()
 
 namespace Engine
 {
@@ -21,15 +21,19 @@ namespace Engine
 			OPENGL = 1
 		};
 
-		__declspec(dllexport) Renderer(int a_width, int a_height, bool a_fullscreen, bool a_vsync, Device a_renderer);
+		__declspec(dllexport) Renderer();
 		__declspec(dllexport) ~Renderer();
+		__declspec(dllexport) bool CreateRenderer(int a_width, int a_height, bool a_fullscreen, bool a_vsync, Device a_renderer);
 		void Draw();
-		void CloseWindow();
+		void Release();
 		__declspec(dllexport) Device GraphicsMode();
 		__declspec(dllexport) float FPS();
 		__declspec(dllexport) float FrameTime();
 		__declspec(dllexport) Window* GetWindow();
 		__declspec(dllexport) bool VSync();
+
+		__declspec(dllexport) void SetClearColour(float a_red, float a_green, float a_blue, float a_alpha);
+		__declspec(dllexport) void GetVideoCardInfo(char* a_cardName, int& a_memory);
 
 	private:
 		inline void CalculateFPS();

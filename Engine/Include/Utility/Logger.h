@@ -40,7 +40,6 @@ namespace Engine
 
 	private:
 		__declspec(dllexport) Logger();
-		__declspec(dllexport) ~Logger();
 		__declspec(dllexport) Logger(Logger const&);
 		__declspec(dllexport) void operator=(Logger const&);
 

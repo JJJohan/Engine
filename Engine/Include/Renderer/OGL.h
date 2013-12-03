@@ -9,11 +9,10 @@ namespace Engine
 	{
 	public:
 		OGL();
-		~OGL();
 
 		bool InitialiseExtensions(HWND a_hwnd);
 		bool InitialiseOpenGL(int a_width, int a_height, bool a_vsync, HWND a_hwnd, float a_screenNear, float a_screenFar);
-		void Shutdown(HWND a_hwnd);
+		void Release(HWND a_hwnd);
 		bool MakeCurrent();
 
 		void BeginScene();

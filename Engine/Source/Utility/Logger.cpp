@@ -22,11 +22,6 @@ namespace Engine
 		m_conHandle = NULL;
 	}
 
-	Logger::~Logger()
-	{
-
-	}
-
 	void Logger::InitConsole()
 	{
 #ifdef _DEBUG
@@ -145,6 +140,12 @@ namespace Engine
 				std::cout << fmt << std::endl;
 			}
 		}
+
+#if defined(_DEBUG)
+		fmt.append("\n");
+		std::wstring wbuff = std::wstring(fmt.begin(), fmt.end());
+		OutputDebugString(wbuff.c_str());
+#endif
 	}
 
 	void Logger::LogWarning(std::string a_fmt, ...)
@@ -208,7 +209,7 @@ namespace Engine
 		Message("Error", ss.str());
 			
 #if _DEBUG
-		__debugbreak();
+		//__debugbreak();
 #endif
 	}
 
@@ -236,14 +237,21 @@ namespace Engine
 		SAFE_DELETE(buff);
 
 		// Message user	
-		if (a_title.empty())
-			a_title = Core::Instance().GetTitle();
+		if (APPLICATION)
+		{
+			if (a_title.empty())
+				a_title = APPLICATION->GetTitle();
+			else
+				a_title = APPLICATION->GetTitle() + " - " + a_title;
+		}
 		else
-			a_title = Core::Instance().GetTitle() + " - " + a_title;
+		{
+			if (a_title.empty())
+				a_title = "Message";
+		}
+
 		std::wstring title = std::wstring(a_title.begin(), a_title.end());
 		std::wstring text = std::wstring(fmt.begin(), fmt.end());
 		MessageBox(NULL, text.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
-
-		
 	}
 }

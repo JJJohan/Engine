@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "SysInfo.h"
 #include "wtypes.h"
 
 namespace Engine

@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug - Single Threaded|Win32">
+      <Configuration>Debug - Single Threaded</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
@@ -26,22 +30,22 @@
     <ClInclude Include="Include\Math\Quaternion.h" />
     <ClInclude Include="Include\Math\Vector2.h" />
     <ClInclude Include="Include\Math\Vector3.h" />
-    <ClInclude Include="Include\Network.h" />
+    <ClInclude Include="Include\Application\Network.h" />
     <ClInclude Include="Include\Renderer\DX11.h" />
     <ClInclude Include="Include\Math\Matrix.h" />
-    <ClInclude Include="Include\Helpers.h" />
-    <ClInclude Include="Include\Input.h" />
-    <ClInclude Include="Include\Logger.h" />
-    <ClInclude Include="Include\Core.h" />
+    <ClInclude Include="Include\Utility\Helpers.h" />
+    <ClInclude Include="Include\Application\Input.h" />
+    <ClInclude Include="Include\Utility\Logger.h" />
+    <ClInclude Include="Include\Application\Application.h" />
     <ClInclude Include="Include\Renderer\OGL.h" />
     <ClInclude Include="Include\Renderer\OGLDefines.h" />
     <ClInclude Include="Include\Renderer\Renderer.h" />
     <ClInclude Include="Include\stdafx.h" />
-    <ClInclude Include="Include\String2.h" />
-    <ClInclude Include="Include\SysInfo.h" />
-    <ClInclude Include="Include\Timer.h" />
-    <ClInclude Include="Include\tinyxml2.h" />
-    <ClInclude Include="Include\Window.h" />
+    <ClInclude Include="Include\Utility\String2.h" />
+    <ClInclude Include="Include\Application\SysInfo.h" />
+    <ClInclude Include="Include\Utility\Timer.h" />
+    <ClInclude Include="Include\Utility\tinyxml2.h" />
+    <ClInclude Include="Include\Renderer\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Components\Component.cpp" />
@@ -51,18 +55,18 @@
     <ClCompile Include="Source\Math\Quaternion.cpp" />
     <ClCompile Include="Source\Math\Vector2.cpp" />
     <ClCompile Include="Source\Math\Vector3.cpp" />
-    <ClCompile Include="Source\Network.cpp" />
+    <ClCompile Include="Source\Application\Network.cpp" />
     <ClCompile Include="Source\Renderer\DX11.cpp" />
     <ClCompile Include="Source\Math\Matrix.cpp" />
-    <ClCompile Include="Source\Input.cpp" />
-    <ClCompile Include="Source\Logger.cpp" />
-    <ClCompile Include="Source\Core.cpp" />
+    <ClCompile Include="Source\Application\Input.cpp" />
+    <ClCompile Include="Source\Utility\Logger.cpp" />
+    <ClCompile Include="Source\Application\Application.cpp" />
     <ClCompile Include="Source\Renderer\OGL.cpp" />
     <ClCompile Include="Source\Renderer\Renderer.cpp" />
-    <ClCompile Include="Source\String2.cpp" />
-    <ClCompile Include="Source\SysInfo.cpp" />
-    <ClCompile Include="Source\tinyxml2.cpp" />
-    <ClCompile Include="Source\Window.cpp" />
+    <ClCompile Include="Source\Utility\String2.cpp" />
+    <ClCompile Include="Source\Application\SysInfo.cpp" />
+    <ClCompile Include="Source\Utility\tinyxml2.cpp" />
+    <ClCompile Include="Source\Renderer\Window.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5E706E85-FC41-4795-9A7B-DACAACB78BD3}</ProjectGuid>
@@ -71,6 +75,12 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Single Threaded|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
@@ -89,6 +99,9 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Single Threaded|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -98,6 +111,13 @@
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)Include;</IncludePath>
     <SourcePath>$(VC_SourcePath);$(ProjectDir)Source;</SourcePath>
     <TargetName>$(ProjectName)-d</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Single Threaded|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)Include;</IncludePath>
+    <SourcePath>$(VC_SourcePath);$(ProjectDir)Source;</SourcePath>
+    <TargetName>$(ProjectName)-d</TargetName>
+    <OutDir>$(SolutionDir)Debug\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -110,6 +130,24 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ENGINE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>$(ProjectDir)External\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalDependencies>libcurl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Single Threaded|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ENGINE_EXPORTS;FORCE_SINGLE_THREADING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
       <AdditionalIncludeDirectories>$(ProjectDir)External\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

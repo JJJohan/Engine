@@ -8,6 +8,7 @@ namespace Engine
 		m_hInstance = NULL;
 		m_pOGL = a_pOGL;
 		m_created = false;
+		m_shutdown = false;
 	}
 
 	void Window::OpenWindow(int a_width, int a_height, bool a_fullscreen, bool a_vsync)
@@ -21,8 +22,8 @@ namespace Engine
 		m_hInstance = GetModuleHandle(NULL);
 
 		// Give the application a name
-		std::string title = Core::Instance().GetTitle();
-		std::wstring appName = std::wstring(title.begin(), title.end());
+		m_title = APPLICATION->GetTitle();
+		std::wstring appName = std::wstring(m_title.begin(), m_title.end());
 
 		// Setup the windows class with default settings.
 		wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
@@ -42,6 +43,7 @@ namespace Engine
 		if (!RegisterClassEx(&wc))
 		{
 			LOG_ERROR("Window could not be registered!");
+			APPLICATION->Release();
 			return;
 		}
 
@@ -58,7 +60,13 @@ namespace Engine
 
 			// Initialise OpenGL extensions.
 			if (!m_pOGL->InitialiseExtensions(m_hwnd))
+			{
 				LOG_ERROR("Could not initialise OpenGL extensions.");
+				DestroyWindow(m_hwnd);
+				m_hwnd = NULL;
+				APPLICATION->Release();
+				return;
+			}
 
 			// Release the temporary window now that the extensions have been initialized.
 			DestroyWindow(m_hwnd);
@@ -97,15 +105,24 @@ namespace Engine
 		if (!m_hwnd)
 		{
 			LOG_ERROR("Window could not be created!");
+			APPLICATION->Release();
 			return;
 		}
 
 		if (m_pOGL)
 		{
 			if (!m_pOGL->InitialiseOpenGL(a_width, a_height, a_vsync, m_hwnd, 1.0f, 1000.0f))
+			{
 				LOG_ERROR("Could not initialise OpenGL.");
+				APPLICATION->Release();
+				return;
+			}
+
+#if defined(FORCE_SINGLE_THREADING)
+			m_pOGL->MakeCurrent();
+#endif			
 			
-			LOG("Initialised OpenGL Renderer.", Logger::BLUE);
+			LOG(Logger::BLUE, "Initialised OpenGL Renderer.");
 		}
 
 		// Bring the window up on the screen and set it as main focus.
@@ -163,10 +180,11 @@ namespace Engine
 		m_hwnd = NULL;
 
 		// Remove the application instance.
-		std::string title = Core::Instance().GetTitle();
-		std::wstring appName = std::wstring(title.begin(), title.end());
+		std::wstring appName = std::wstring(m_title.begin(), m_title.end());
 		UnregisterClass(appName.c_str(), m_hInstance);
 		m_hInstance = NULL;
+
+		LOG("Window released.");
 	}
 
 	void Window::Update()
@@ -174,8 +192,10 @@ namespace Engine
 		MSG msg;
 		ZeroMemory(&msg, sizeof(MSG));
 
-		while (!Core::Instance().Exit())
+#if !defined(FORCE_SINGLE_THREADING)
+		while (APPLICATION && !APPLICATION->GetExit())
 		{
+#endif
 			// Handle the windows messages.
 			if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 			{
@@ -186,11 +206,23 @@ namespace Engine
 			// If windows signals to end the application then exit out.
 			if (msg.message == WM_QUIT)
 			{
-				Core::Instance().SetExit();
+				LOG("Triggered exit.");
+				m_shutdown = true;
+				return;
 			}
 		
+#if !defined(FORCE_SINGLE_THREADING)
 			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		}
+
+		m_shutdown = true;
+
+#endif
+	}
+
+	bool Window::Shutdown()
+	{
+		return m_shutdown;
 	}
 
 	LRESULT CALLBACK Window::WndProc(HWND a_hwnd, UINT a_umessage, WPARAM a_wparam, LPARAM a_lparam)
